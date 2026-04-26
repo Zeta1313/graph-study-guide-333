@@ -134,6 +134,20 @@ public class Practice {
    * @return true if there is a two-way connection between v1 and v2, false otherwise
    */
   public static <T> boolean twoWay(Vertex<T> v1, Vertex<T> v2) {
+    if (v1 == null || v2 == null) return false;
+    if (v1 == v2) return true;
+    return (twoWay(v1, v2, new HashSet<>()) && twoWay(v2, v1, new HashSet<>()));
+  }
+
+  private static <T> boolean twoWay(Vertex<T> v1, Vertex<T> v2, Set<Vertex<T>> visited) {
+    if (visited.contains(v1)) return false;
+    if (v1 == v2) return true;
+    visited.add(v1);
+    List<Vertex<T>> neighbors = v1.neighbors;
+    if (neighbors.isEmpty()) return false;
+    for (Vertex<T> x: neighbors) {
+      if (twoWay(x, v2, visited)) return true;
+    }
     return false;
   }
 
@@ -150,6 +164,23 @@ public class Practice {
    * @return whether there exists a valid positive path from starting to ending
    */
   public static boolean positivePathExists(Map<Integer, Set<Integer>> graph, int starting, int ending) {
+      if (starting < 0 || !graph.containsKey(starting)) return false;
+      if (starting == ending) return true;
+      Set<Integer> visited = new HashSet<>();
+      return positivePathExists(graph, starting, ending, visited);
+  }
+
+  private static boolean positivePathExists(Map<Integer, Set<Integer>> graph, int starting, int ending, Set<Integer> visited) {
+    if (visited.contains(starting)) return false;
+    visited.add(starting);
+    if (starting == ending) return true;
+    Set<Integer> neighbors = graph.get(starting);
+    if (neighbors.isEmpty()) return false;
+    for (int x : neighbors) {
+      if (x > 0) {
+        if (positivePathExists(graph, x, ending, visited)) return true;
+      }
+    }
     return false;
   }
 
