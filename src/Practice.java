@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,7 +28,22 @@ public class Practice {
    * @return the number of vertices with odd values reachable from the starting vertex
    */
   public static int oddVertices(Vertex<Integer> starting) {
-    return 0;
+    if (starting == null) return 0;
+    Set<Vertex<Integer>> visited = new HashSet<>();
+    return oddVertices(starting, visited);
+  }
+
+  private static int oddVertices(Vertex<Integer> starting, Set<Vertex<Integer>> visited) {
+    if (visited.contains(starting)) return 0;
+    visited.add(starting);
+    int output = 0;
+    if (starting.data%2 == 1) output++;
+    List<Vertex<Integer>> neighbors = starting.neighbors;
+    if (neighbors.isEmpty()) return output;
+    for (Vertex<Integer> x: neighbors) {
+      output = output + oddVertices(x, visited);
+    }
+    return output;
   }
 
   /**
@@ -47,8 +65,27 @@ public class Practice {
    * @return a sorted list of all reachable vertex values by 
    */
   public static List<Integer> sortedReachable(Vertex<Integer> starting) {
-    return null;
+    if (starting == null) return new ArrayList<>();
+    Set<Vertex<Integer>> visited = new HashSet<>();
+    List<Integer> output = sortedReachable(starting, visited);
+    Collections.sort(output);
+    return output;
   }
+
+  private static List<Integer> sortedReachable(Vertex<Integer> starting, Set<Vertex<Integer>> visited) {
+    if (visited.contains(starting)) return new ArrayList<>();
+    visited.add(starting);
+    List<Vertex<Integer>> neighbors = starting.neighbors;
+    List<Integer> output = new ArrayList<>();
+    output.add(starting.data);
+    if (neighbors.isEmpty()) return output;
+    for (Vertex<Integer> x : neighbors) {
+      List<Integer> temp = sortedReachable(x, visited);
+      for (Integer y : temp) output.add(y);
+    }
+    return output;
+  }
+
 
   /**
    * Returns a sorted list of all values reachable from the given starting vertex in the provided graph.
@@ -61,7 +98,25 @@ public class Practice {
    * @return a sorted list of all reachable vertex values
    */
   public static List<Integer> sortedReachable(Map<Integer, Set<Integer>> graph, int starting) {
-    return null;
+    if (!graph.containsKey(starting)) return new ArrayList<>();
+    List<Integer> output = new ArrayList<>();
+    output = sortedReachable(graph, starting, output);
+    Collections.sort(output);
+    return output;
+  }
+
+  private static List<Integer> sortedReachable(Map<Integer, Set<Integer>> graph, int starting, List<Integer> output) {
+    if (output.contains(starting)) return output;
+    output.add(starting);
+    Set<Integer> neighbors = graph.get(starting);
+    if (neighbors.isEmpty()) return output;
+    for (int x : neighbors) {
+      List<Integer> temporary = sortedReachable(graph, x, output);
+      for (int y : temporary) {
+        if (!output.contains(y)) output.add(y);
+      }
+    }
+    return output;
   }
 
   /**
